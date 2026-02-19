@@ -34,6 +34,12 @@ on:
         required: true
         default: false
 
+      enable_isponsorblock:
+        description: "Integrate iSponsorBlock"
+        type: boolean
+        required: true
+        default: false
+
       ipa_url:
         description: "URL to the decrypted IPA file"
         default: ""
@@ -230,6 +236,12 @@ jobs:
           cd ${{ github.workspace }}
           git clone --quiet --depth=1 --recurse-submodules https://github.com/therealFoxster/DontEatMyContent.git
 
+      - name: Clone iSponsorBlock
+        if: ${{ inputs.enable_isponsorblock }}
+        run: |
+          cd ${{ github.workspace }}
+          git clone --quiet --depth=1 --recurse-submodules https://github.com/Galactic-Dev/iSponsorBlock.git
+
       - name: Build YouPiP
         if: ${{ inputs.enable_youpip }}
         run: |
@@ -290,6 +302,15 @@ jobs:
           cd ${{ github.workspace }}/DontEatMyContent
           make clean package DEBUG=0 FINALPACKAGE=1
           mv packages/*.deb ${{ github.workspace }}/demc.deb
+        env:
+          THEOS: ${{ github.workspace }}/theos
+
+      - name: Build iSponsorBlock
+        if: ${{ inputs.enable_isponsorblock }}
+        run: |
+          cd ${{ github.workspace }}/iSponsorBlock
+          make clean package DEBUG=0 FINALPACKAGE=1
+          mv packages/*.deb ${{ github.workspace }}/isb.deb
         env:
           THEOS: ${{ github.workspace }}/theos
 
